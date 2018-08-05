@@ -14,15 +14,14 @@ type Point struct {
 	next, pre *Point
 }
 
-func create() (list List) {
-	var point = new(Point)
-	point.data = 0
-	point.next = nil
-	point.pre = nil
-	list.head = point
-	return list
+func (list *List) init() {
+	var head, tail = new(Point), new(Point)
+	head.next = tail
+	tail.pre = head
+	list.head = head
+	list.tail = tail
+	list.size = 0
 }
-
 func (list *List) exist(data int) bool {
 	var exist = false
 	for now := list.head; now != nil; now = now.next {
@@ -37,7 +36,13 @@ func (list *List) exist(data int) bool {
 func (list *List) append(data int) {
 	var point = new(Point)
 	point.data = data
-	list.tail.next = point
+
+	point.next = list.tail
+	point.pre = list.tail.pre
+
+	point.pre.next = point
+	list.tail.pre = point
+
 	list.size++
 }
 func (list *List) insert(data int) {
@@ -47,6 +52,8 @@ func (list *List) insert(data int) {
 	for now := list.head; now != nil; now = now.next {
 		if now.data <= data && now.next.data >= data {
 			point.next = now.next
+			point.pre = now
+			now.next.pre = point
 			now.next = point
 			list.size++
 			flag = true
@@ -62,7 +69,8 @@ func (list *List) delete(data int) {
 	for now := list.head; now != nil; now = now.next {
 		if now.data == data {
 			if now.next != nil {
-				now.pre = now.next
+				now.next.pre = now.pre
+				now.pre.next = now.next
 			} else {
 				now.pre = nil
 			}
@@ -72,17 +80,26 @@ func (list *List) delete(data int) {
 }
 
 func (list *List) print() {
-	for now := list.head; now != nil; now = now.next {
-		fmt.Println("the data is: ", now.data)
-	}
 	fmt.Println("list size is: ", list.size)
+	fmt.Println("left to right is: ")
+	for now := list.head; now != nil; now = now.next {
+		fmt.Print(now.data, " ")
+	}
+	fmt.Println()
+	fmt.Println("right to left is: ")
+	for now := list.tail; now != nil; now = now.pre {
+		fmt.Print(now.data, " ")
+	}
 }
 
 func main() {
-	var list = create()
+	var list = new(List)
+	list.init()
 	list.append(5)
 	list.append(10)
 	list.insert(2)
 	list.insert(8)
+	list.delete(5)
+	list.insert(4)
 	list.print()
 }
