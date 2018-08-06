@@ -92,6 +92,26 @@ func (list *List) print() {
 	}
 }
 
+type Say interface {
+	say()
+}
+
+type Animal struct {
+	name string
+}
+
+func (animal *Animal) say() {
+	fmt.Println(animal.name)
+}
+
+func (animal *Animal) set(name string) {
+	animal.name = name
+}
+
+func hello(animal Say) {
+	animal.say()
+}
+
 func main() {
 	var list = new(List)
 	list.init()
@@ -102,4 +122,13 @@ func main() {
 	list.delete(5)
 	list.insert(4)
 	list.print()
+	var dog = new(Animal)
+	var cat = new(Animal)
+	dog.set("dogg")
+	cat.set("Crystal")
+	hello(dog)
+	hello(cat)
+	dog.say()
+	cat.say()
+
 }
